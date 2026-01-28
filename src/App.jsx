@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import PromptForm from "./components/PromptForm";
 import VideoCard from "./components/VideoCard";
@@ -10,6 +10,22 @@ export default function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedVideos, setGeneratedVideos] = useState([]);
 
+  // Load saved videos on first load
+  useEffect(() => {
+    const savedVideos = localStorage.getItem("generatedVideos");
+    if (savedVideos) {
+      setGeneratedVideos(JSON.parse(savedVideos));
+    }
+  }, []);
+
+  // Save videos whenever they change
+  useEffect(() => {
+    localStorage.setItem(
+      "generatedVideos",
+      JSON.stringify(generatedVideos)
+    );
+  }, [generatedVideos]);
+
   const handleGenerate = () => {
     if (!prompt.trim()) return;
 
@@ -18,8 +34,8 @@ export default function App() {
     // Simulate API call
     setTimeout(() => {
       const newVideo = {
-        id: Date.now(), 
-        prompt, 
+        id: Date.now(),
+        prompt,
         status: "Completed",
         createdAt: new Date().toLocaleTimeString(),
       };
@@ -42,7 +58,7 @@ export default function App() {
           isGenerating={isGenerating}
         />
 
-        {generatedVideos.length > 0 && (
+        {generatedVideos.length > 0 ? (
           <section>
             <h3 className="text-lg font-semibold mb-4">
               Generated Videos
@@ -54,6 +70,13 @@ export default function App() {
               ))}
             </div>
           </section>
+        ) : (
+          <div className="text-center text-gray-500 dark:text-gray-400">
+            <p>No videos generated yet.</p>
+            <p className="text-sm mt-1">
+              Enter a prompt above to create your first video.
+            </p>
+          </div>
         )}
       </main>
     </div>
