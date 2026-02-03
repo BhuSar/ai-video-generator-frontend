@@ -31,7 +31,6 @@ export default function App() {
 
     setIsGenerating(true);
 
-    // Simulate API call
     setTimeout(() => {
       const newVideo = {
         id: Date.now(),
@@ -44,6 +43,13 @@ export default function App() {
       setPrompt("");
       setIsGenerating(false);
     }, 2000);
+  };
+
+  // 🗑 Delete video handler
+  const handleDeleteVideo = (id) => {
+    setGeneratedVideos((prev) =>
+      prev.filter((video) => video.id !== id)
+    );
   };
 
   return (
@@ -66,7 +72,11 @@ export default function App() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {generatedVideos.map((video) => (
-                <VideoCard key={video.id} video={video} />
+                <VideoCard
+                  key={video.id}
+                  video={video}
+                  onDelete={handleDeleteVideo}
+                />
               ))}
             </div>
           </section>
