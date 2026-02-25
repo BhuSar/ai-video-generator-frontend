@@ -1,4 +1,31 @@
+# =========================
+# Environment Variables (CRITICAL)
+# =========================
+.env
+server/.env
+
+# =========================
+# Node Modules
+# =========================
+node_modules
+server/node_modules
+
+# =========================
+# Build Output
+# =========================
+dist
+dist-ssr
+build
+
+# =========================
+# Generated Media (DO NOT COMMIT)
+# =========================
+server/frames
+server/videos
+
+# =========================
 # Logs
+# =========================
 logs
 *.log
 npm-debug.log*
@@ -7,18 +34,26 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
 
-# Editor directories and files
+# =========================
+# Editor / IDE
+# =========================
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# =========================
+# Misc
+# =========================
+*.local
+coverage
