@@ -5,13 +5,14 @@ import VideoCard from "./components/VideoCard";
 import useDarkMode from "./hooks/useDarkMode";
 
 export default function App() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const [darkMode, toggleDarkMode] = useDarkMode();
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedVideos, setGeneratedVideos] = useState([]);
   const [activeVideo, setActiveVideo] = useState(null);
 
-  // Load saved videos safely on first load
   useEffect(() => {
     const savedVideos = localStorage.getItem("generatedVideos");
     if (!savedVideos) return;
@@ -28,28 +29,29 @@ export default function App() {
     }
   }, []);
 
-  // Save videos whenever they change
   useEffect(() => {
-    localStorage.setItem(
-      "generatedVideos",
-      JSON.stringify(generatedVideos)
-    );
+    localStorage.setItem("generatedVideos", JSON.stringify(generatedVideos));
   }, [generatedVideos]);
 
-  // Real Generate (Backend Connected)
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
+
+    if (!API_BASE_URL) {
+      alert("Missing VITE_API_BASE_URL environment variable.");
+      return;
+    }
 
     setIsGenerating(true);
 
     try {
-      const response = await fetch("http://localhost:5000/generate", {
+      const response = await fetch(`${API_BASE_URL}/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ prompt }),
       });
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -57,9 +59,9 @@ export default function App() {
       }
 
       const newVideo = {
-        id: data.id, 
-        prompt, 
-        status: "Completed", 
+        id: data.id,
+        prompt,
+        status: "Completed",
         videoUrl: data.videoUrl,
         createdAt: new Date().toLocaleTimeString(),
       };
@@ -74,7 +76,6 @@ export default function App() {
     }
   };
 
-  // Download video
   const handleDownload = () => {
     if (!activeVideo?.videoUrl || isGenerating) return;
 
@@ -86,11 +87,8 @@ export default function App() {
     document.body.removeChild(link);
   };
 
-  // Delete video
   const handleDeleteVideo = (id) => {
-    setGeneratedVideos((prev) =>
-      prev.filter((video) => video.id !== id)
-    );
+    setGeneratedVideos((prev) => prev.filter((video) => video.id !== id));
 
     if (activeVideo?.id === id) {
       setActiveVideo(null);
@@ -102,7 +100,6 @@ export default function App() {
       <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
 
       <main className="max-w-4xl mx-auto px-4 py-10 text-gray-800 dark:text-gray-200 space-y-8">
-        {/* Main video preview */}
         {activeVideo ? (
           <div className="space-y-3">
             <video
@@ -133,7 +130,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Prompt input */}
         <PromptForm
           prompt={prompt}
           setPrompt={setPrompt}
@@ -141,12 +137,9 @@ export default function App() {
           isGenerating={isGenerating}
         />
 
-        {/* Video gallery */}
         {generatedVideos.length > 0 ? (
           <section>
-            <h3 className="text-lg font-semibold mb-4">
-              Generated videos
-            </h3>
+            <h3 className="text-lg font-semibold mb-4">Generated videos</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {generatedVideos.map((video) => (
