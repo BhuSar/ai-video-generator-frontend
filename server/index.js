@@ -35,6 +35,9 @@ if (!fs.existsSync(FRAMES_DIR)) {
   fs.mkdirSync(FRAMES_DIR);
 }
 
+// Serve generated videos publicly
+app.use("/videos", express.static(VIDEOS_DIR));
+
 app.get("/", (req, res) => {
   res.send("AI Video Generator Backend Running");
 });
@@ -85,7 +88,6 @@ app.post("/generate", async (req, res) => {
 
       console.log("Video created successfully");
 
-      // Dynamic base URL (works locally + deployed)
       const baseUrl = `${req.protocol}://${req.get("host")}`;
 
       res.json({
@@ -101,8 +103,6 @@ app.post("/generate", async (req, res) => {
   }
 });
 
-app.use("/videos", express.static(VIDEOS_DIR));
-
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
